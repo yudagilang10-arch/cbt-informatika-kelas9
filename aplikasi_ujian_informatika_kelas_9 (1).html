@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ujian CBT Informatika Kelas 9</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .grid-cell {
+      aspect-ratio: 1;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col justify-between font-sans">
+
+  <!-- TOP HEADER (Visible inside test) -->
+  <header id="quiz-header" class="hidden bg-indigo-700 text-white sticky top-0 z-30 shadow-md">
+    <div class="max-w-md mx-auto px-4 py-3 flex items-center justify-between">
+      <div>
+        <h1 class="text-xs text-indigo-200 uppercase font-semibold tracking-wider">ASAT GASAL INFORMATIKA</h1>
+        <p id="header-user-info" class="text-sm font-bold truncate max-w-[180px]">-</p>
+      </div>
+      <div class="text-right">
+        <div id="timer" class="text-sm font-mono bg-indigo-900/60 px-2.5 py-1 rounded-lg border border-indigo-400/30 flex items-center gap-1.5">
+          <i class="fa-regular fa-clock text-amber-300"></i>
+          <span id="timer-text">90:00</span>
+        </div>
+      </div>
+    </div>
+    <!-- Progress Bar -->
+    <div class="w-full bg-indigo-900/40 h-1.5">
+      <div id="progress-bar" class="bg-amber-400 h-1.5 transition-all duration-300" style="width: 5%;"></div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-md mx-auto w-full flex-grow p-4 flex flex-col justify-center">
+
+    <!-- FORM IDENTITAS (HALAMAN AWAL) -->
+    <div id="start-screen" class="bg-white rounded-2xl shadow-xl p-6 border border-slate-200">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner">
+          <i class="fa-solid fa-laptop-code text-2xl"></i>
+        </div>
+        <h2 class="text-xl font-bold text-slate-800">Ujian Online Informatika</h2>
+        <p class="text-xs text-slate-500 mt-1">ASESMEN SUMATIF TENGAH SEMESTER IX</p>
+      </div>
+
+      <form id="identity-form" onsubmit="startQuiz(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">NAMA LENGKAP</label>
+          <div class="relative">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-user text-sm"></i>
+            </span>
+            <input type="text" id="input-nama" required placeholder="Masukkan nama siswa..." class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition-all">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">NO. ABSEN</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-hashtag text-sm"></i>
+              </span>
+              <input type="number" id="input-absen" min="1" max="50" required placeholder="1-40" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition-all">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">KELAS</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <i class="fa-solid fa-school text-sm"></i>
+              </span>
+              <select id="input-kelas" required class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:border-indigo-600 focus:bg-white transition-all">
+                <option value="">Pilih...</option>
+                <option value="9A">IX - A</option>
+                <option value="9B">IX - B</option>
+                <option value="9C">IX - C</option>
+                <option value="9D">IX - D</option>
+                <option value="9E">IX - E</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 space-y-1">
+          <p class="font-bold flex items-center gap-1.5">
+            <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> Ketentuan Ujian:
+          </p>
+          <ul class="list-disc pl-4 space-y-0.5 text-[11px] text-amber-700">
+            <li>Tampilan 1 muka 1 soal.</li>
+            <li>Jumlah Soal: 20 Soal Pilihan Ganda.</li>
+            <li>Waktu Pengerjaan: 90 Menit.</li>
+            <li>Nilai akan otomatis tersimpan di Google Sheet Guru.</li>
+          </ul>
+        </div>
+
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2">
+          <span>Mulai Kerjakan Soal</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- TAMPILAN SOAL (1 MUKA 1 SOAL) -->
+    <div id="quiz-screen" class="hidden flex-col gap-4">
+      
+      <!-- QUESTION CARD -->
+      <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-5 flex flex-col justify-between min-h-[420px]">
+        <div>
+          <!-- Soal Header -->
+          <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full">
+              Soal No. <span id="question-number">1</span> / 20
+            </span>
+            <button onclick="toggleGridModal()" class="text-xs text-slate-500 hover:text-indigo-600 font-medium flex items-center gap-1 bg-slate-100 px-2.5 py-1 rounded-lg">
+              <i class="fa-solid fa-th"></i>
+              <span>Daftar Soal</span>
+            </button>
+          </div>
+
+          <!-- Teks Soal -->
+          <div id="question-text" class="text-sm font-medium text-slate-800 leading-relaxed mb-4">
+            <!-- Dynamic content -->
+          </div>
+
+          <!-- Container Gambar / Diagram Presisi -->
+          <div id="question-image-container" class="mb-4 hidden justify-center bg-slate-50 p-3 rounded-xl border border-slate-200">
+            <!-- SVG / Custom Diagram loaded dynamically -->
+          </div>
+
+          <!-- Pilihan Jawaban -->
+          <div id="options-container" class="space-y-2.5">
+            <!-- Dynamic options -->
+          </div>
+        </div>
+
+        <!-- NAVIGATION BUTTONS -->
+        <div class="flex items-center justify-between gap-2 mt-6 pt-3 border-t border-slate-100">
+          <button id="btn-prev" onclick="navigateQuestion(-1)" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+            <i class="fa-solid fa-chevron-left"></i>
+            <span>Kembali</span>
+          </button>
+
+          <button id="btn-next" onclick="navigateQuestion(1)" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-100 transition-all flex items-center gap-1.5">
+            <span id="btn-next-text">Selanjutnya</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HALAMAN HASIL / SUBMITTED -->
+    <div id="result-screen" class="hidden bg-white rounded-2xl shadow-xl p-6 border border-slate-200 text-center">
+      <div id="submit-loading" class="py-8 space-y-4">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
+        <p class="text-sm font-bold text-slate-700">Mengirimkan Nilai ke Google Sheet...</p>
+        <p class="text-xs text-slate-400">Mohon tidak menutup halaman ini.</p>
+      </div>
+
+      <div id="submit-success" class="hidden py-4 space-y-4">
+        <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+          <i class="fa-solid fa-circle-check text-3xl"></i>
+        </div>
+        <h2 class="text-xl font-bold text-slate-800">Ujian Selesai!</h2>
+        <p class="text-xs text-slate-500">Nilai Anda telah berhasil tersimpan di sistem.</p>
+
+        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 my-4 space-y-2">
+          <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">SKOR AKHIR ANDA</p>
+          <div id="score-display" class="text-4xl font-extrabold text-indigo-600">0</div>
+          <div class="text-xs text-slate-600 flex justify-center gap-4 pt-2">
+            <span>Benar: <strong id="correct-count" class="text-emerald-600">0</strong></span>
+            <span>Salah: <strong id="wrong-count" class="text-rose-600">0</strong></span>
+          </div>
+        </div>
+
+        <div class="text-left bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+          <p><strong>Nama:</strong> <span id="res-nama">-</span></p>
+          <p><strong>No. Absen:</strong> <span id="res-absen">-</span></p>
+          <p><strong>Kelas:</strong> <span id="res-kelas">-</span></p>
+        </div>
+
+        <p class="text-[11px] text-slate-400">Terima kasih telah mengerjakan ujian dengan jujur.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DAFTAR SOAL -->
+  <div id="grid-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-800 text-sm">Navigasi Soal</h3>
+        <button onclick="toggleGridModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-60 overflow-y-auto p-1">
+        <!-- Dynamic grid -->
+      </div>
+      <button onclick="toggleGridModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2 text-xs rounded-xl">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- SCRIPT UTAMA -->
+  <script>
+    // ==========================================
+    // CONFIGURATION: URL GOOGLE APPS SCRIPT ANDA
+    // ==========================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxg1O2M2U2EVWwOXESpRlL2F0sCY9eTY0ceVyTbKkAJgmr_qbf90WZD4SzgtrquTk4uFg/exec"; 
+
+    // DATA SISWA
+    let studentInfo = { nama: "", noAbsen: "", kelas: "" };
+    let currentQuestionIndex = 0;
+    let userAnswers = {}; // { 0: 'A', 1: 'C', ... }
+    let timerInterval = null;
+    let timeLeft = 90 * 60; // 90 menit dalam detik
+
+    // SOAL & JAWABAN LENGKAP BERSAMAKAN DIAGRAM VISUAL EXACT MATCH
+    const questions = [
+      {
+        id: 1,
+        question: "Perhatikan gambar struktur organisasi di bawah ini!<br><br>Gambar di atas merupakan struktur data hierarkis yang disebut sebagai struktur data...",
+        type: "svg_tree_org",
+        options: [
+          { key: "A", text: "Tree" },
+          { key: "B", text: "Graph" },
+          { key: "C", text: "Array" },
+          { key: "D", text: "Stack" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 2,
+        question: "Keunggulan dari tipe struktur data pada gambar soal nomor 1 di atas adalah...",
+        options: [
+          { key: "A", text: "Menyesuaikan dengan urutan nilainya" },
+          { key: "B", text: "Proses mencari data dapat dilakukan dengan cepat" },
+          { key: "C", text: "Proses pengurutan data dilakukan dengan lambat" },
+          { key: "D", text: "Node terdapat pada tingkat paling atas" }
+        ],
+        answer: "B"
+      },
+      {
+        id: 3,
+        question: "Dalam sebuah sistem informasi sekolah, terdapat hubungan data antara siswa, guru dan mata pelajaran. Jika hubungan antara siswa dan mata pelajaran digambarkan dalam bentuk graf, maka simpul (vertex) dalam struktur tersebut berfungsi untuk menyatakan...",
+        options: [
+          { key: "A", text: "Menyesuaikan dengan urutan nilainya" },
+          { key: "B", text: "Proses mencari data dapat dilakukan dengan cepat" },
+          { key: "C", text: "Objek entitas seperti siswa, guru, atau mata pelajaran" },
+          { key: "D", text: "Proses pengurutan data dilakukan dengan lambat" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 4,
+        question: "Di komputer sekolah, terdapat folder utama bernama 'Tugas Sekolah'. Di dalam folder tersebut, terdapat dua sub-folder bernama 'Tugas Kelas 8' dan 'Tugas Kelas 9'. Di dalam folder 'Tugas Kelas 9', terdapat lagi file bernama 'Informatika.docx' dan 'Matematika.xlsx'.<br><br>Struktur penyimpanan file dan folder di komputer berbentuk hierarki (bercabang dari atas ke bawah) seperti stimulus di atas. Struktur data ini disebut...",
+        options: [
+          { key: "A", text: "Stack" },
+          { key: "B", text: "Queue" },
+          { key: "C", text: "Tree" },
+          { key: "D", text: "Linear" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 5,
+        question: "Hisyam membuka komputer di laboratorium sekolah dan melihat susunan folder penyimpanan file miliknya seperti pada gambar di bawah ini:<br><br>Dalam konsep struktur data Tree, bagian sumber utama atau elemen yang berada di posisi paling atas dan tidak memiliki induk (parent) disebut dengan istilah Root. Berdasarkan gambar di atas, manakah yang bertindak sebagai Root?",
+        type: "svg_folder_tree",
+        options: [
+          { key: "A", text: "D: (Data Sekolah)" },
+          { key: "B", text: "Folder Kelas 9" },
+          { key: "C", text: "Informatika.docx" },
+          { key: "D", text: "Folder Kelas 8" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 6,
+        question: "Perhatikan GAMBAR 1 dan GAMBAR 2 di bawah ini! Kotak hitam melambangkan True dan kotak putih melambangkan False.<br><br>Jika menggunakan operator AND, maka hasil dari 'GAMBAR 1 AND GAMBAR 2' adalah...",
+        type: "svg_logic_and_q6",
+        options: [
+          { key: "A", text: "Pilihan A", svgType: "grid_a" },
+          { key: "B", text: "Pilihan B", svgType: "grid_b" },
+          { key: "C", text: "Pilihan C", svgType: "grid_c" },
+          { key: "D", text: "Pilihan D", svgType: "grid_d" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 7,
+        question: "Berdasarkan GAMBAR 1 dan GAMBAR 2 yang sama pada nomor sebelumnya, jika menggunakan operator OR maka hasil dari 'GAMBAR 1 OR GAMBAR 2' adalah...",
+        type: "svg_logic_or_q7",
+        options: [
+          { key: "A", text: "Pilihan A", svgType: "or_a" },
+          { key: "B", text: "Pilihan B", svgType: "or_b" },
+          { key: "C", text: "Pilihan C", svgType: "or_c" },
+          { key: "D", text: "Pilihan D", svgType: "or_d" }
+        ],
+        answer: "B"
+      },
+      {
+        id: 8,
+        question: "Hisyam ingin membuat robot penanak nasi otomatis. Ia harus memasukkan rangkaian instruksi ke dalam memori robot tersebut. Instruksi tersebut ditulis dalam bentuk langkah-langkah yang berurutan, jelas, dan tidak membingungkan agar robot tidak mengalami eror saat memasak nasi.<br><br>Dalam dunia Informatika, rangkaian langkah-langkah logis dan sistematis yang disusun untuk menyelesaikan suatu masalah disebut...",
+        options: [
+          { key: "A", text: "Struktur Data" },
+          { key: "B", text: "Algoritma" },
+          { key: "C", text: "Dekomposisi" },
+          { key: "D", text: "Sistem Operasi" }
+        ],
+        answer: "B"
+      },
+      {
+        id: 9,
+        question: "Afnan sedang belajar menyusun instruksi untuk robot pembersih lantai di rumahnya. Robot tersebut hanya memahami 4 perintah dasar: Maju 1 Langkah, Putar Kiri (90°), Putar Kanan (90°), dan Bersihkan Lantai. Urutan instruksi secara rinci dan teratur ini disebut sebagai algoritma.<br><br>Manakah pernyataan berikut yang paling tepat menggambarkan makna dari algoritma?",
+        options: [
+          { key: "A", text: "Perangkat keras yang digunakan untuk menggerakkan robot" },
+          { key: "B", text: "Urutan langkah-langkah logis, sistematis, dan terstruktur untuk menyelesaikan masalah" },
+          { key: "C", text: "Bahasa pemrograman khusus yang digunakan oleh para ilmuwan komputer" },
+          { key: "D", text: "Proses mengubah sinyal listrik menjadi gerakan mekanis pada robot" }
+        ],
+        answer: "B"
+      },
+      {
+        id: 10,
+        question: "Rina membuat sebuah proposal kegiatan HUT RI 17 Agustus yang berisi rencana anggaran. Rencana anggaran tersebut membutuhkan tabel, yang terdiri dari no, tanggal kegiatan, nama kegiatan, bahan dan anggaran yang dibutuhkan.<br><br>Aplikasi apa sajakah yang dapat dikaitkan dari tema kasus tersebut?",
+        options: [
+          { key: "A", text: "Microsoft Word, Microsoft Power Point" },
+          { key: "B", text: "Microsoft Excel, Microsoft Power Point" },
+          { key: "C", text: "Microsoft Word, Microsoft Excel" },
+          { key: "D", text: "WhatsApp, Microsoft Excel" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 11,
+        question: "Perhatikan gambar pohon biner (Binary Tree) di bawah ini!<br><br>Ada berapa jumlah node dan root yang ditunjukkan pada gambar di atas?",
+        type: "svg_binary_tree",
+        options: [
+          { key: "A", text: "Jumlah node 5 dan jumlah root 1" },
+          { key: "B", text: "Jumlah node 9 dan jumlah root 3" },
+          { key: "C", text: "Jumlah node 10 dan jumlah root 1" },
+          { key: "D", text: "Jumlah node 1 dan jumlah root 1" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 12,
+        question: "Berdasarkan gambar pohon biner pada soal nomor 11 di atas, ada berapa jumlah leaf (daun) dan path (jalur) yang ditunjukkan?",
+        type: "svg_binary_tree",
+        options: [
+          { key: "A", text: "Jumlah leaf 5 dan jumlah path 9" },
+          { key: "B", text: "Jumlah leaf 9 dan jumlah path 10" },
+          { key: "C", text: "Jumlah leaf 10 dan jumlah path 5" },
+          { key: "D", text: "Jumlah leaf 1 dan jumlah path 1" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 13,
+        question: "Perhatikan peta rumah berbentuk lingkaran di bawah ini! Setiap rumah mempunyai jarak 10 meter. Hara mengawali pengantaran paket dari rumah B. Hara berjalan searah jarum jam maupun sebaliknya.<br><br>Berapakah jumlah total jarak yang akan ditempuh Hara jika Hara dari rumah B melewati D kembali ke C, menuju ke F dan terakhir ke H?",
+        type: "svg_circle_houses",
+        options: [
+          { key: "A", text: "60 meter" },
+          { key: "B", text: "70 meter" },
+          { key: "C", text: "80 meter" },
+          { key: "D", text: "90 meter" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 14,
+        question: "Jika perjalanan Hara seperti soal nomor 13 di atas, maka rincian jarak masing-masing tahap perjalanan yang dicatat Hara dalam meter adalah...",
+        options: [
+          { key: "A", text: "20, 10, 30, 20" },
+          { key: "B", text: "20, 20, 10, 30" },
+          { key: "C", text: "10, 20, 30, 40" },
+          { key: "D", text: "20, 10, 20, 30" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 15,
+        question: "Perhatikan daftar perangkat lunak berikut:<br>(1) Adobe Premiere Pro<br>(2) Final Cut Pro<br>(3) iMovie<br>(4) YouTube<br>(5) Adobe Photoshop<br><br>Berapa jumlah perangkat lunak dari kriteria di atas yang berfungsi sebagai perangkat lunak editing video?",
+        options: [
+          { key: "A", text: "1" },
+          { key: "B", text: "2" },
+          { key: "C", text: "3" },
+          { key: "D", text: "4" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 16,
+        question: "Afnan membuat sebuah blog. Dia menentukan platform blog tentang makanan, mendaftar akun blog, memilih topik makanan ringan daerah, membuat konten berkualitas, mengatur tampilan blog, dan mempromosikannya ke media sosial.<br><br>Berapa langkah yang dilalui dalam rangkaian kegiatan membuat blog tersebut?",
+        options: [
+          { key: "A", text: "4" },
+          { key: "B", text: "5" },
+          { key: "C", text: "6" },
+          { key: "D", text: "7" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 17,
+        question: "Browser memiliki beberapa komponen seperti address bar, tab, bookmark, reload, dan status bar. Tabs memungkinkan kita membuka beberapa situs dalam satu jendela.<br><br>Manakah gambar di bawah ini yang merupakan komponen Tabs pada web browser?",
+        type: "svg_browser_tabs",
+        options: [
+          { key: "A", text: "Opsi A (Kotak Pencarian)", svgType: "browser_search" },
+          { key: "B", text: "Opsi B (Address Bar)", svgType: "browser_address" },
+          { key: "C", text: "Opsi C (Tabs Bar)", svgType: "browser_tab_correct" },
+          { key: "D", text: "Opsi D (Action Icons)", svgType: "browser_icons" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 18,
+        question: "Mahes, Hisyam, dan Kristi mencari informasi tentang 'Teknologi Masa Depan'. Hasil pencarian mesin pencari mereka:<br>• Mahes (Google): 1.450.000.000 hasil<br>• Hisyam (Bing): 890.000.000 hasil<br>• Kristi (Yahoo): 620.000.000 hasil<br><br>Hasil pencarian yang paling banyak didapatkan dengan menggunakan...",
+        type: "search_engine_table",
+        options: [
+          { key: "A", text: "Yahoo" },
+          { key: "B", text: "Bing" },
+          { key: "C", text: "Google" },
+          { key: "D", text: "Google Chrome" }
+        ],
+        answer: "C"
+      },
+      {
+        id: 19,
+        question: "Berdasarkan data pencarian Mahes, Hisyam, dan Kristi pada soal sebelumnya, kesimpulan yang paling tepat adalah...",
+        options: [
+          { key: "A", text: "Mahes mendapatkan hasil pencarian yang paling banyak" },
+          { key: "B", text: "Waktu pencarian Hisyam lebih singkat dari Kristi" },
+          { key: "C", text: "Hasil Mahes dan Hisyam lebih sedikit dari Kristi" },
+          { key: "D", text: "Hasil pencarian sama karena kata kuncinya sama" }
+        ],
+        answer: "A"
+      },
+      {
+        id: 20,
+        question: "Struktur data hierarkis berupa pohon yang memiliki cabang-cabang node dinamakan...",
+        options: [
+          { key: "A", text: "Graph" },
+          { key: "B", text: "Tree" },
+          { key: "C", text: "Stack" },
+          { key: "D", text: "Queue" }
+        ],
+        answer: "B"
+      }
+    ];
+
+    // GENERATOR VISUAL SVG EXAK MATCH
+    function renderQuestionGraphic(type) {
+      if (!type) return "";
+
+      if (type === "svg_tree_org") {
+        return `
+          <svg viewBox="0 0 500 280" class="w-full h-auto max-h-56">
+            <style>
+              .node-title { font-family: sans-serif; font-size: 10px; font-weight: bold; fill: white; }
+              .node-sub { font-family: sans-serif; font-size: 8px; fill: white; }
+            </style>
+            <!-- Lines -->
+            <path d="M 250 50 L 130 90 M 250 50 L 370 90" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 130 115 L 80 150 M 130 115 L 180 150" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 370 115 L 320 150 M 370 115 L 420 150" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 80 175 L 50 210 M 80 175 L 110 210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 180 175 L 150 210 M 180 175 L 210 210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 320 175 L 320 210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+            <path d="M 420 175 L 420 210" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4"/>
+
+            <!-- CEO -->
+            <circle cx="250" cy="30" r="22" fill="#ec4899" stroke="#be185d" stroke-width="3"/>
+            <rect x="200" y="45" width="100" height="20" rx="10" fill="#ec4899"/>
+            <text x="250" y="58" text-anchor="middle" class="node-title">CEO</text>
+
+            <!-- MANAGERS -->
+            <circle cx="130" cy="95" r="18" fill="#f97316"/>
+            <rect x="90" y="105" width="80" height="18" rx="9" fill="#f97316"/>
+            <text x="130" y="117" text-anchor="middle" class="node-title">MANAGER 1</text>
+
+            <circle cx="370" cy="95" r="18" fill="#f97316"/>
+            <rect x="330" y="105" width="80" height="18" rx="9" fill="#f97316"/>
+            <text x="370" y="117" text-anchor="middle" class="node-title">MANAGER 2</text>
+
+            <!-- FOREMEN & SALES -->
+            <rect x="45" y="150" width="70" height="16" rx="8" fill="#10b981"/>
+            <text x="80" y="162" text-anchor="middle" class="node-sub">FOREMAN A</text>
+            
+            <rect x="145" y="150" width="70" height="16" rx="8" fill="#10b981"/>
+            <text x="180" y="162" text-anchor="middle" class="node-sub">FOREMAN B</text>
+
+            <rect x="285" y="150" width="70" height="16" rx="8" fill="#10b981"/>
+            <text x="320" y="162" text-anchor="middle" class="node-sub">SALES A</text>
+
+            <rect x="385" y="150" width="70" height="16" rx="8" fill="#10b981"/>
+            <text x="420" y="162" text-anchor="middle" class="node-sub">SALES B</text>
+
+            <!-- WORKERS -->
+            <rect x="30" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="50" y="221" text-anchor="middle" class="node-sub">WORKER</text>
+            <rect x="90" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="110" y="221" text-anchor="middle" class="node-sub">WORKER</text>
+
+            <rect x="130" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="150" y="221" text-anchor="middle" class="node-sub">WORKER</text>
+            <rect x="190" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="210" y="221" text-anchor="middle" class="node-sub">WORKER</text>
+
+            <rect x="300" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="320" y="221" text-anchor="middle" class="node-sub">SALER</text>
+            <rect x="400" y="210" width="40" height="14" rx="4" fill="#0284c7"/>
+            <text x="420" y="221" text-anchor="middle" class="node-sub">SALER</text>
+          </svg>
+        `;
+      }
+
+      if (type === "svg_folder_tree") {
+        return `
+          <svg viewBox="0 0 400 200" class="w-full h-auto max-h-48">
+            <!-- Root -->
+            <rect x="140" y="10" width="120" height="36" rx="8" fill="#f59e0b"/>
+            <text x="200" y="33" fill="white" font-weight="bold" font-size="12" text-anchor="middle">D: Data Sekolah</text>
+
+            <path d="M 200 46 L 200 70 M 110 70 L 290 70 M 110 70 L 110 90 M 290 70 L 290 90" stroke="#64748b" stroke-width="2"/>
+
+            <!-- Level 1 Folders -->
+            <rect x="60" y="90" width="100" height="30" rx="6" fill="#fbbf24"/>
+            <text x="110" y="110" fill="white" font-bold font-size="11" text-anchor="middle">Kelas 8</text>
+
+            <rect x="240" y="90" width="100" height="30" rx="6" fill="#fbbf24"/>
+            <text x="290" y="110" fill="white" font-bold font-size="11" text-anchor="middle">Kelas 9</text>
+
+            <path d="M 290 120 L 290 140 M 220 140 L 360 140 M 220 140 L 220 155 M 360 140 L 360 155" stroke="#64748b" stroke-width="2"/>
+
+            <!-- Files -->
+            <rect x="170" y="155" width="100" height="32" rx="6" fill="#2563eb"/>
+            <text x="220" y="175" fill="white" font-size="10" text-anchor="middle">Informatika.docx</text>
+
+            <rect x="310" y="155" width="100" height="32" rx="6" fill="#16a34a"/>
+            <text x="360" y="175" fill="white" font-size="10" text-anchor="middle">Matematika.xlsx</text>
+          </svg>
+        `;
+      }
+
+      if (type === "svg_logic_and_q6" || type === "svg_logic_or_q7") {
+        return `
+          <div class="space-y-3 w-full">
+            <div class="flex justify-around text-center text-xs font-bold text-slate-700">
+              <div>
+                <p class="mb-1">GAMBAR 1</p>
+                <div class="grid grid-cols-3 gap-0.5 border-2 border-slate-800 bg-slate-800 w-24 h-24">
+                  <div class="bg-white"></div><div class="bg-white"></div><div class="bg-black"></div>
+                  <div class="bg-black"></div><div class="bg-white"></div><div class="bg-white"></div>
+                  <div class="bg-black"></div><div class="bg-white"></div><div class="bg-white"></div>
+                </div>
+              </div>
+              <div>
+                <p class="mb-1">GAMBAR 2</p>
+                <div class="grid grid-cols-3 gap-0.5 border-2 border-slate-800 bg-slate-800 w-24 h-24">
+                  <div class="bg-white"></div><div class="bg-white"></div><div class="bg-black"></div>
+                  <div class="bg-black"></div><div class="bg-white"></div><div class="bg-white"></div>
+                  <div class="bg-white"></div><div class="bg-black"></div><div class="bg-black"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      if (type === "svg_binary_tree") {
+        return `
+          <svg viewBox="0 0 320 220" class="w-full h-auto max-h-52">
+            <style>
+              .btn-node { fill: white; stroke: #1e293b; stroke-width: 2; }
+              .txt-node { font-family: sans-serif; font-weight: bold; font-size: 12px; fill: #1e293b; text-anchor: middle; dominant-baseline: middle; }
+            </style>
+            <!-- Lines -->
+            <line x1="160" y1="30" x2="90" y2="70" stroke="#64748b" stroke-width="2"/>
+            <line x1="160" y1="30" x2="230" y2="70" stroke="#64748b" stroke-width="2"/>
+
+            <line x1="90" y1="70" x2="50" y2="120" stroke="#64748b" stroke-width="2"/>
+            <line x1="90" y1="70" x2="130" y2="120" stroke="#64748b" stroke-width="2"/>
+
+            <line x1="230" y1="70" x2="190" y2="120" stroke="#64748b" stroke-width="2"/>
+            <line x1="230" y1="70" x2="270" y2="120" stroke="#64748b" stroke-width="2"/>
+
+            <line x1="130" y1="120" x2="110" y2="170" stroke="#64748b" stroke-width="2"/>
+            <line x1="130" y1="120" x2="150" y2="170" stroke="#64748b" stroke-width="2"/>
+
+            <line x1="270" y1="120" x2="270" y2="170" stroke="#64748b" stroke-width="2"/>
+
+            <!-- Nodes -->
+            <circle cx="160" cy="30" r="16" class="btn-node"/><text x="160" y="30" class="txt-node">30</text>
+            
+            <circle cx="90" cy="70" r="16" class="btn-node"/><text x="90" y="70" class="txt-node">15</text>
+            <circle cx="230" cy="70" r="16" class="btn-node"/><text x="230" y="70" class="txt-node">37</text>
+
+            <circle cx="50" cy="120" r="16" class="btn-node"/><text x="50" y="120" class="txt-node">7</text>
+            <circle cx="130" cy="120" r="16" class="btn-node"/><text x="130" y="120" class="txt-node">26</text>
+
+            <circle cx="190" cy="120" r="16" class="btn-node"/><text x="190" y="120" class="txt-node">32</text>
+            <circle cx="270" cy="120" r="16" class="btn-node"/><text x="270" y="120" class="txt-node">45</text>
+
+            <circle cx="110" cy="170" r="16" class="btn-node"/><text x="110" y="170" class="txt-node">19</text>
+            <circle cx="150" cy="170" r="16" class="btn-node"/><text x="150" y="170" class="txt-node">28</text>
+
+            <circle cx="270" cy="170" r="16" class="btn-node"/><text x="270" y="170" class="txt-node">42</text>
+          </svg>
+        `;
+      }
+
+      if (type === "svg_circle_houses") {
+        return `
+          <svg viewBox="0 0 260 260" class="w-full h-auto max-h-56">
+            <circle cx="130" cy="130" r="90" fill="none" stroke="#78350f" stroke-width="12"/>
+            
+            <!-- Houses A-J -->
+            <!-- Top (A, B) -->
+            <circle cx="100" cy="43" r="12" fill="#f59e0b"/><text x="100" y="47" font-weight="bold" font-size="10" fill="white" text-anchor="middle">A</text>
+            <circle cx="160" cy="43" r="12" fill="#f59e0b"/><text x="160" y="47" font-weight="bold" font-size="10" fill="white" text-anchor="middle">B</text>
+
+            <!-- Right (C, D, E) -->
+            <circle cx="210" cy="80" r="12" fill="#f59e0b"/><text x="210" y="84" font-weight="bold" font-size="10" fill="white" text-anchor="middle">C</text>
+            <circle cx="220" cy="130" r="12" fill="#f59e0b"/><text x="220" y="134" font-weight="bold" font-size="10" fill="white" text-anchor="middle">D</text>
+            <circle cx="200" cy="180" r="12" fill="#f59e0b"/><text x="200" y="184" font-weight="bold" font-size="10" fill="white" text-anchor="middle">E</text>
+
+            <!-- Bottom (F) -->
+            <circle cx="130" cy="220" r="12" fill="#ef4444"/><text x="130" y="224" font-weight="bold" font-size="10" fill="white" text-anchor="middle">F</text>
+
+            <!-- Left (G, H, J) -->
+            <circle cx="60" cy="180" r="12" fill="#f59e0b"/><text x="60" y="184" font-weight="bold" font-size="10" fill="white" text-anchor="middle">G</text>
+            <circle cx="40" cy="130" r="12" fill="#f59e0b"/><text x="40" y="134" font-weight="bold" font-size="10" fill="white" text-anchor="middle">H</text>
+            <circle cx="50" cy="80" r="12" fill="#f59e0b"/><text x="50" y="84" font-weight="bold" font-size="10" fill="white" text-anchor="middle">J</text>
+          </svg>
+        `;
+      }
+
+      if (type === "search_engine_table") {
+        return `
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-xs text-left text-slate-700 border border-slate-200 rounded-lg overflow-hidden">
+              <thead class="bg-indigo-50 text-indigo-900 font-bold">
+                <tr>
+                  <th class="p-2 border-b">Nama Siswa</th>
+                  <th class="p-2 border-b">Search Engine</th>
+                  <th class="p-2 border-b">Hasil Pencarian</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b bg-white">
+                  <td class="p-2 font-semibold">Mahes</td>
+                  <td class="p-2 text-indigo-600">Google</td>
+                  <td class="p-2 font-mono">1.450.000.000</td>
+                </tr>
+                <tr class="border-b bg-slate-50">
+                  <td class="p-2 font-semibold">Hisyam</td>
+                  <td class="p-2 text-sky-600">Bing</td>
+                  <td class="p-2 font-mono">890.000.000</td>
+                </tr>
+                <tr class="bg-white">
+                  <td class="p-2 font-semibold">Kristi</td>
+                  <td class="p-2 text-purple-600">Yahoo</td>
+                  <td class="p-2 font-mono">620.000.000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      return "";
+    }
+
+    // GENERATOR GRID 3x3 UNTUK PILIHAN SOAL LOGIKA (SOAL 6 & 7)
+    function renderOptionGrid(svgType) {
+      let cells = [0,0,0, 0,0,0, 0,0,0]; // 0=white, 1=black
+
+      if (svgType === "grid_a") cells = [0,0,1, 1,0,0, 0,0,0]; // Correct AND
+      if (svgType === "grid_b") cells = [1,1,1, 1,1,1, 0,0,0];
+      if (svgType === "grid_c") cells = [0,0,1, 1,0,1, 1,0,0];
+      if (svgType === "grid_d") cells = [1,1,1, 1,0,1, 0,0,0];
+
+      if (svgType === "or_a") cells = [0,0,1, 1,0,0, 0,0,0];
+      if (svgType === "or_b") cells = [0,0,1, 1,0,0, 1,1,1]; // Correct OR
+      if (svgType === "or_c") cells = [1,1,1, 1,0,0, 0,0,0];
+      if (svgType === "or_d") cells = [0,0,1, 1,0,0, 0,1,1];
+
+      // Browser options
+      if (svgType === "browser_search") {
+        return `<div class="border border-slate-300 rounded p-1 bg-white flex items-center gap-2"><input text="text" class="w-full bg-slate-100 h-5 text-[10px] px-2" placeholder="Cari..."><span class="bg-slate-200 text-[10px] px-2 py-0.5 rounded">Cari</span></div>`;
+      }
+      if (svgType === "browser_address") {
+        return `<div class="border border-slate-300 rounded p-1 bg-slate-100 flex items-center gap-1 text-[10px] font-mono"><i class="fa-solid fa-lock text-slate-500"></i> kemdikbud.go.id</div>`;
+      }
+      if (svgType === "browser_tab_correct") {
+        return `
+          <div class="bg-slate-200 p-1 rounded-t-lg flex items-center gap-1 text-[10px]">
+            <div class="bg-white px-2 py-1 rounded-t flex items-center gap-1 border-b-2 border-indigo-600 font-bold">
+              <span>Kemdikbud</span> <i class="fa-solid fa-xmark text-slate-400"></i>
+            </div>
+            <div class="bg-slate-300 px-2 py-1 rounded-t flex items-center gap-1 text-slate-600">
+              <span>Google</span>
+            </div>
+            <span class="text-slate-600 font-bold px-1">+</span>
+          </div>
+        `;
+      }
+      if (svgType === "browser_icons") {
+        return `<div class="flex items-center gap-3 text-slate-600 text-sm px-2"><i class="fa-solid fa-star text-amber-400"></i><i class="fa-solid fa-share"></i><i class="fa-solid fa-rotate-right"></i></div>`;
+      }
+
+      return `
+        <div class="grid grid-cols-3 gap-0.5 border border-slate-800 bg-slate-800 w-12 h-12 inline-block align-middle ml-2">
+          ${cells.map(c => `<div class="${c === 1 ? 'bg-black' : 'bg-white'}"></div>`).join('')}
+        </div>
+      `;
+    }
+
+    // MULAI QUIZ
+    function startQuiz(e) {
+      e.preventDefault();
+      studentInfo.nama = document.getElementById("input-nama").value.trim();
+      studentInfo.noAbsen = document.getElementById("input-absen").value;
+      studentInfo.kelas = document.getElementById("input-kelas").value;
+
+      document.getElementById("start-screen").classList.add("hidden");
+      document.getElementById("quiz-header").classList.remove("hidden");
+      document.getElementById("quiz-screen").classList.remove("hidden");
+      document.getElementById("quiz-screen").classList.add("flex");
+
+      document.getElementById("header-user-info").innerText = `${studentInfo.nama} (${studentInfo.kelas}/${studentInfo.noAbsen})`;
+
+      startTimer();
+      renderCurrentQuestion();
+      buildGridModal();
+    }
+
+    // TIMER COUNTDOWN
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        document.getElementById("timer-text").innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    // RENDER SOAL SAAT INI (1 MUKA 1 SOAL)
+    function renderCurrentQuestion() {
+      const q = questions[currentQuestionIndex];
+
+      // Update Header & Progress
+      document.getElementById("question-number").innerText = currentQuestionIndex + 1;
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+      document.getElementById("progress-bar").style.width = `${progress}%`;
+
+      // Question Text
+      document.getElementById("question-text").innerHTML = q.question;
+
+      // Question Diagram / Graphic
+      const imgContainer = document.getElementById("question-image-container");
+      if (q.type) {
+        imgContainer.innerHTML = renderQuestionGraphic(q.type);
+        imgContainer.classList.remove("hidden");
+        imgContainer.classList.add("flex");
+      } else {
+        imgContainer.innerHTML = "";
+        imgContainer.classList.add("hidden");
+        imgContainer.classList.remove("flex");
+      }
+
+      // Options
+      const optionsContainer = document.getElementById("options-container");
+      optionsContainer.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const isSelected = userAnswers[currentQuestionIndex] === opt.key;
+        const optCard = document.createElement("div");
+        optCard.className = `p-3.5 rounded-xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+          isSelected 
+            ? "border-indigo-600 bg-indigo-50/80 shadow-sm" 
+            : "border-slate-200 bg-slate-50/50 hover:bg-slate-100"
+        }`;
+        optCard.onclick = () => selectOption(opt.key);
+
+        let optionLabel = `<div class="flex items-center gap-3">
+          <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs ${
+            isSelected ? "bg-indigo-600 text-white" : "bg-slate-200 text-slate-700"
+          }">${opt.key}</span>
+          <span class="text-xs font-semibold text-slate-800">${opt.text}</span>
+        </div>`;
+
+        if (opt.svgType) {
+          optionLabel += renderOptionGrid(opt.svgType);
+        }
+
+        optCard.innerHTML = optionLabel;
+        optionsContainer.appendChild(optCard);
+      });
+
+      // Navigation button state
+      document.getElementById("btn-prev").disabled = currentQuestionIndex === 0;
+
+      const btnNextText = document.getElementById("btn-next-text");
+      if (currentQuestionIndex === questions.length - 1) {
+        btnNextText.innerText = "Selesai & Kirim";
+      } else {
+        btnNextText.innerText = "Selanjutnya";
+      }
+    }
+
+    // PILIH JAWABAN
+    function selectOption(key) {
+      userAnswers[currentQuestionIndex] = key;
+      renderCurrentQuestion();
+      updateGridModal();
+    }
+
+    // NAVIGASI PREV / NEXT
+    function navigateQuestion(step) {
+      if (step === 1 && currentQuestionIndex === questions.length - 1) {
+        // Konfirmasi selesai
+        if (confirm("Apakah Anda yakin ingin menyelesaikan dan mengirimkan jawaban ujian?")) {
+          finishQuiz();
+        }
+        return;
+      }
+
+      currentQuestionIndex += step;
+      if (currentQuestionIndex < 0) currentQuestionIndex = 0;
+      if (currentQuestionIndex >= questions.length) currentQuestionIndex = questions.length - 1;
+
+      renderCurrentQuestion();
+    }
+
+    // GRID MODAL DAFTAR SOAL
+    function toggleGridModal() {
+      const modal = document.getElementById("grid-modal");
+      modal.classList.toggle("hidden");
+    }
+
+    function buildGridModal() {
+      const grid = document.getElementById("question-grid");
+      grid.innerHTML = "";
+
+      questions.forEach((q, idx) => {
+        const btn = document.createElement("button");
+        btn.id = `grid-btn-${idx}`;
+        btn.onclick = () => {
+          currentQuestionIndex = idx;
+          renderCurrentQuestion();
+          toggleGridModal();
+        };
+        btn.className = getGridBtnClass(idx);
+        btn.innerText = idx + 1;
+        grid.appendChild(btn);
+      });
+    }
+
+    function getGridBtnClass(idx) {
+      const isAnswered = userAnswers[idx] !== undefined;
+      const isCurrent = idx === currentQuestionIndex;
+
+      if (isCurrent) return "p-2 rounded-lg text-xs font-bold bg-indigo-600 text-white ring-2 ring-indigo-300";
+      if (isAnswered) return "p-2 rounded-lg text-xs font-bold bg-emerald-500 text-white";
+      return "p-2 rounded-lg text-xs font-bold bg-slate-100 text-slate-700 hover:bg-slate-200";
+    }
+
+    function updateGridModal() {
+      questions.forEach((_, idx) => {
+        const btn = document.getElementById(`grid-btn-${idx}`);
+        if (btn) btn.className = getGridBtnClass(idx);
+      });
+    }
+
+    // SELESAI & HITUNG NILAI & KIRIM KE GOOGLE SHEET
+    function finishQuiz() {
+      clearInterval(timerInterval);
+
+      // Sembunyikan layar soal & header
+      document.getElementById("quiz-header").classList.add("hidden");
+      document.getElementById("quiz-screen").classList.add("hidden");
+      document.getElementById("result-screen").classList.remove("hidden");
+
+      // Hitung skor
+      let correctCount = 0;
+      let jawabanDetail = [];
+
+      questions.forEach((q, idx) => {
+        const userAns = userAnswers[idx] || "-";
+        const isCorrect = userAns === q.answer;
+        if (isCorrect) correctCount++;
+
+        jawabanDetail.push({
+          no: q.id,
+          jawab: userAns,
+          kunci: q.answer,
+          status: isCorrect ? "BENAR" : "SALAH"
+        });
+      });
+
+      const finalScore = Math.round((correctCount / questions.length) * 100);
+
+      // Data payload untuk dikirim ke Google Sheet
+      const payload = {
+        waktu: new Date().toLocaleString("id-ID"),
+        nama: studentInfo.nama,
+        noAbsen: studentInfo.noAbsen,
+        kelas: studentInfo.kelas,
+        nilai: finalScore,
+        jumlahBenar: correctCount,
+        totalSoal: questions.length,
+        jawabanDetail: jawabanDetail
+      };
+
+      // Kirim data via fetch POST
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors", // menghindari CORS error pada Google Apps Script
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        showResults(finalScore, correctCount, questions.length - correctCount);
+      })
+      .catch(err => {
+        console.error("Gagal mengirim data:", err);
+        showResults(finalScore, correctCount, questions.length - correctCount);
+      });
+    }
+
+    function showResults(score, correct, wrong) {
+      document.getElementById("submit-loading").classList.add("hidden");
+      document.getElementById("submit-success").classList.remove("hidden");
+
+      document.getElementById("score-display").innerText = score;
+      document.getElementById("correct-count").innerText = correct;
+      document.getElementById("wrong-count").innerText = wrong;
+
+      document.getElementById("res-nama").innerText = studentInfo.nama;
+      document.getElementById("res-absen").innerText = studentInfo.noAbsen;
+      document.getElementById("res-kelas").innerText = studentInfo.kelas;
+    }
+  </script>
+</body>
+</html>
